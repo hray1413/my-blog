@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>新增文章｜Goblin Blog</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; }
+    input, textarea { width: 100%; margin-bottom: 1em; padding: 0.5em; }
+    button { padding: 0.5em 1em; }
+  </style>
+</head>
+<body>
+  <h1>📝 新增文章</h1>
+  <form method="POST" action="/dash/new">
+    <label>標題：</label>
+    <input name="title" placeholder="輸入文章標題" required>
+
+    <label>內容：</label>
+    <textarea name="content" rows="10" placeholder="輸入文章內容" required></textarea>
+
+    <button type="submit">✨ 儲存並生成 ID</button>
+  </form>
+  <p><a href="/dash">← 回到 Dash</a></p>
+</body>
+</html>
