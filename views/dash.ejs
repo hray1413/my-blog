@@ -1,0 +1,13 @@
+<h1>Goblin Dash 後台</h1>
+<a href="/dash/new">新增文章</a>
+<ul>
+  <% posts.forEach(post => { %>
+    <li>
+      <strong><%= post.title %></strong>
+      <a href="/dash/edit/<%= post.id %>">編輯</a>
+      <form method="POST" action="/dash/delete/<%= post.id %>" style="display:inline;">
+        <button type="submit">刪除</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
