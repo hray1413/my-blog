@@ -1,51 +1,13 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const slugify = require('slugify');
-const app = express();
-app.use(express.urlencoded({ extended: true }));
-
-const postsPath = path.join(__dirname, 'posts.json');
-const getPosts = () => JSON.parse(fs.readFileSync(postsPath));
-
-// Dash 主頁
-app.get('/dash', (req, res) => {
-  const posts = getPosts();
-  res.render('dash', { posts });
-});
-
-// 新增文章表單
-app.get('/dash/new', (req, res) => {
-  res.render('new');
-});
-
-// 新增文章處理
-app.post('/dash/new', (req, res) => {
-  const posts = getPosts();
-  const id = `${slugify(req.body.title, { lower: true })}-${Date.now()}`;
-  posts.push({ id, title: req.body.title, content: req.body.content });
-  fs.writeFileSync(postsPath, JSON.stringify(posts, null, 2));
-  res.redirect('/dash');
-});
-
-// 編輯文章表單
-app.get('/dash/edit/:id', (req, res) => {
-  const post = getPosts().find(p => p.id === req.params.id);
-  res.render('edit', { post });
-});
-
-// 編輯文章處理
-app.post('/dash/edit/:id', (req, res) => {
-  const posts = getPosts().map(p =>
-    p.id === req.params.id ? { ...p, title: req.body.title, content: req.body.content } : p
-  );
-  fs.writeFileSync(postsPath, JSON.stringify(posts, null, 2));
-  res.redirect('/dash');
-});
-
-// 刪除文章
-app.post('/dash/delete/:id', (req, res) => {
-  const posts = getPosts().filter(p => p.id !== req.params.id);
-  fs.writeFileSync(postsPath, JSON.stringify(posts, null, 2));
-  res.redirect('/dash');
-});
+<h1>Goblin Dash 儀式感後台</h1>
+<a href="/dash/new">新增文章</a>
+<ul>
+  <% posts.forEach(post => { %>
+    <li>
+      <strong><%= post.title %></strong>
+      <a href="/dash/edit/<%= post.id %>">編輯</a>
+      <form action="/dash/delete/<%= post.id %>" method="POST" style="display:inline;">
+        <button type="submit">刪除</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
