@@ -7,6 +7,7 @@ const slugify = require('slugify');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 app.use(session({ secret: 'goblin-secret', resave: false, saveUninitialized: true }));
 
 app.set('view engine', 'ejs');
@@ -16,11 +17,24 @@ const users = require('./users.json');
 const postsPath = path.join(__dirname, 'posts.json');
 const getPosts = () => JSON.parse(fs.readFileSync(postsPath));
 
-// 中間件：保護 Dash 路由
+// 登入保護中間件
 function requireAuth(req, res, next) {
   if (req.session.authenticated) return next();
   res.redirect('/login');
 }
+
+// 首頁
+app.get('/', (req, res) => {
+  const posts = getPosts();
+  res.render('index', { posts });
+});
+
+// 單篇文章
+app.get('/post/:id', (req, res) => {
+  const post = getPosts().find(p => p.id === req.params.id);
+  if (post) res.render('post', { post });
+  else res.status(404).send('找不到這篇文章');
+});
 
 // 登入頁面
 app.get('/login', (req, res) => res.render('login'));
@@ -36,7 +50,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Dash 主頁（需登入）
+// Dash 主頁
 app.get('/dash', requireAuth, (req, res) => {
   const posts = getPosts();
   res.render('dash', { posts });
